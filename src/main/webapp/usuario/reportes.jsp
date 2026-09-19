@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>Reportes Celulares - Sistema de Celulares</title>
+    <title>Reportes Usuarios - Sistema de Celulares</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -47,7 +47,7 @@
             margin-bottom: 5px;
             color: #555;
         }
-        input[type="text"] {
+        input[type="text"], select {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
@@ -82,41 +82,33 @@
 </head>
 <body>
     <div class="container">
-        <h1>Reportes de Celulares</h1>
+        <h1>Reportes Parametrizados de Usuarios</h1>
 
         <div class="reporte-section">
-            <h2>Reporte 1: Buscar por Marca</h2>
-            <form action="../celular" method="POST">
-                <input type="hidden" name="acción" value="buscarMarca">
+            <h2>Reporte 1: Buscar Usuarios por Rol</h2>
+            <form action="../usuario" method="POST">
+                <input type="hidden" name="acción" value="buscarRol">
                 <div class="form-group">
-                    <label for="marca">Marca:</label>
-                    <input type="text" id="marca" name="marca" placeholder="Ej: Samsung, Apple, Xiaomi" required>
+                    <label for="rol">Rol del Usuario:</label>
+                    <select id="rol" name="rol" required>
+                        <option value="">Seleccione un rol...</option>
+                        <option value="admin">Administrador (admin)</option>
+                        <option value="usuario">Usuario Estándar (usuario)</option>
+                    </select>
                 </div>
-                <button type="submit">Buscar por Marca</button>
+                <button type="submit">Generar Reporte por Rol</button>
             </form>
         </div>
 
         <div class="reporte-section">
-            <h2>Reporte 2: Buscar por Sistema Operativo</h2>
-            <form action="../celular" method="POST">
-                <input type="hidden" name="acción" value="buscarSistema">
+            <h2>Reporte 2: Buscar Usuarios por Nombre</h2>
+            <form action="../usuario" method="POST">
+                <input type="hidden" name="acción" value="buscarNombre">
                 <div class="form-group">
-                    <label for="sistemaOperativo">Sistema Operativo:</label>
-                    <input type="text" id="sistemaOperativo" name="sistemaOperativo" placeholder="Ej: Android, iOS" required>
+                    <label for="nombre">Nombre o Coincidencia:</label>
+                    <input type="text" id="nombre" name="nombre" placeholder="Ej: Juan, María, Admin" required>
                 </div>
-                <button type="submit">Buscar por Sistema Operativo</button>
-            </form>
-        </div>
-
-        <div class="reporte-section">
-            <h2>Reporte 3: Buscar por Operador</h2>
-            <form action="../celular" method="POST">
-                <input type="hidden" name="acción" value="buscarOperador">
-                <div class="form-group">
-                    <label for="operador">Operador:</label>
-                    <input type="text" id="operador" name="operador" placeholder="Ej: Claro, Movistar, Tigo" required>
-                </div>
-                <button type="submit">Buscar por Operador</button>
+                <button type="submit">Generar Reporte por Nombre</button>
             </form>
         </div>
 

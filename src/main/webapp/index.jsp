@@ -111,6 +111,9 @@
                 <h2>Reportes de Usuarios</h2>
                 <div class="menu-grid">
                     <div class="menu-item">
+                        <a href="usuario/reportes.jsp">Formulario de Reportes (Rol / Nombre)</a>
+                    </div>
+                    <div class="menu-item">
                         <a href="usuario?acción=buscarRol&rol=admin">Usuarios Administradores</a>
                     </div>
                     <div class="menu-item">
