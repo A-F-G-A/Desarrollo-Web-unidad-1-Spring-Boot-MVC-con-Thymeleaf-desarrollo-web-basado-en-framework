@@ -58,6 +58,39 @@ public class ServletRecuperarClave extends HttpServlet {
     }
 
     private void cargarConfiguracion() {
+        // 1. Prioridad: Variables de entorno del sistema (Producción / Nube)
+        String envHost = System.getenv("SMTP_HOST");
+        String envPort = System.getenv("SMTP_PORT");
+        String envUser = System.getenv("SMTP_USER");
+        if (envUser == null || envUser.trim().isEmpty()) {
+            envUser = System.getenv("MAIL_USER");
+        }
+        String envPassword = System.getenv("SMTP_PASSWORD");
+        if (envPassword == null) {
+            envPassword = System.getenv("MAIL_PASSWORD");
+        }
+
+        if (envHost != null && !envHost.trim().isEmpty()) {
+            this.SMTP_HOST = envHost.trim();
+            this.SMTP_PORT = (envPort != null && !envPort.trim().isEmpty()) ? envPort.trim() : "587";
+            this.SMTP_USER = (envUser != null) ? envUser.trim() : "";
+            this.SMTP_PASSWORD = (envPassword != null) ? envPassword : "";
+            System.out.println("Configuración SMTP cargada desde variables de entorno");
+            return;
+        }
+
+        // 2. Segunda Prioridad: Propiedades del sistema (-Dmail.smtp.host, etc.)
+        String sysHost = System.getProperty("mail.smtp.host");
+        if (sysHost != null && !sysHost.trim().isEmpty()) {
+            this.SMTP_HOST = sysHost.trim();
+            this.SMTP_PORT = System.getProperty("mail.smtp.port", "587");
+            this.SMTP_USER = System.getProperty("mail.smtp.user", "");
+            this.SMTP_PASSWORD = System.getProperty("mail.smtp.password", "");
+            System.out.println("Configuración SMTP cargada desde System properties");
+            return;
+        }
+
+        // 3. Tercera Prioridad: Archivo config.properties (Desarrollo Local)
         Properties configuracion = new Properties();
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
             if (input != null) {
@@ -67,19 +100,18 @@ public class ServletRecuperarClave extends HttpServlet {
                 this.SMTP_USER = configuracion.getProperty("mail.smtp.user", "tu_correo@gmail.com");
                 this.SMTP_PASSWORD = configuracion.getProperty("mail.smtp.password", "tu_app_password");
             } else {
-                // Valores por defecto
-                this.SMTP_HOST = "smtp.gmail.com";
-                this.SMTP_PORT = "587";
-                this.SMTP_USER = "tu_correo@gmail.com";
-                this.SMTP_PASSWORD = "tu_app_password";
+                usarValoresDefectoSMTP();
             }
         } catch (IOException ex) {
-            // Valores por defecto en caso de error
-            this.SMTP_HOST = "smtp.gmail.com";
-            this.SMTP_PORT = "587";
-            this.SMTP_USER = "tu_correo@gmail.com";
-            this.SMTP_PASSWORD = "tu_app_password";
+            usarValoresDefectoSMTP();
         }
+    }
+
+    private void usarValoresDefectoSMTP() {
+        this.SMTP_HOST = "smtp.gmail.com";
+        this.SMTP_PORT = "587";
+        this.SMTP_USER = "tu_correo@gmail.com";
+        this.SMTP_PASSWORD = "tu_app_password";
     }
 
     private void enviarCorreoRecuperacion(String destinatario, String clave) throws MessagingException {

@@ -23,29 +23,75 @@ public class ConexionBaseDatos {
     }
 
     private void cargarConfiguracion() {
+        // 1. Prioridad: Variables de Entorno del sistema (Producción / Nube / Docker / Render / Railway)
+        String envUrl = System.getenv("DB_URL");
+        if (envUrl == null || envUrl.trim().isEmpty()) {
+            envUrl = System.getenv("JDBC_DATABASE_URL");
+        }
+        String envUser = System.getenv("DB_USER");
+        if (envUser == null || envUser.trim().isEmpty()) {
+            envUser = System.getenv("MYSQLUSER");
+        }
+        String envPassword = System.getenv("DB_PASSWORD");
+        if (envPassword == null) {
+            envPassword = System.getenv("MYSQLPASSWORD");
+        }
+
+        // Si existen variables de entorno completas en producción
+        if (envUrl != null && !envUrl.trim().isEmpty()) {
+            this.url = envUrl.trim();
+            this.usuario = (envUser != null) ? envUser.trim() : "root";
+            this.password = (envPassword != null) ? envPassword : "";
+            System.out.println("Configuración de BD cargada desde variables de entorno (Producción)");
+            return;
+        }
+
+        // Si se especifican variables separadas de host/puerto/db de MySQL (ej. Railway/Docker)
+        String mysqlHost = System.getenv("MYSQLHOST");
+        String mysqlPort = System.getenv("MYSQLPORT");
+        String mysqlDb = System.getenv("MYSQLDATABASE");
+        if (mysqlHost != null && !mysqlHost.trim().isEmpty()) {
+            String port = (mysqlPort != null && !mysqlPort.trim().isEmpty()) ? mysqlPort.trim() : "3306";
+            String db = (mysqlDb != null && !mysqlDb.trim().isEmpty()) ? mysqlDb.trim() : "desarrollo_web";
+            this.url = "jdbc:mysql://" + mysqlHost.trim() + ":" + port + "/" + db + "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+            this.usuario = (envUser != null) ? envUser.trim() : "root";
+            this.password = (envPassword != null) ? envPassword : "";
+            System.out.println("Configuración de BD cargada desde variables MYSQLHOST (Producción)");
+            return;
+        }
+
+        // 2. Segunda Prioridad: Propiedades del sistema (-Ddb.url, -Ddb.usuario, -Ddb.password)
+        String sysUrl = System.getProperty("db.url");
+        if (sysUrl != null && !sysUrl.trim().isEmpty()) {
+            this.url = sysUrl.trim();
+            this.usuario = System.getProperty("db.usuario", "root");
+            this.password = System.getProperty("db.password", "");
+            System.out.println("Configuración de BD cargada desde System properties");
+            return;
+        }
+
+        // 3. Tercera Prioridad: Archivo config.properties (Desarrollo Local)
         try (InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties")) {
-            if (input == null) {
-                // Valores por defecto si no existe el archivo de configuración
-                this.url = "jdbc:mysql://localhost:3306/desarrollo_web?useSSL=false&serverTimezone=UTC";
-                this.usuario = "root";
-                this.password = "[REDACTED_DB_PASSWORD]";
-                System.out.println("WARNING: No se encontró config.properties, usando valores por defecto");
-            } else {
+            if (input != null) {
                 configuracion.load(input);
-                this.url = configuracion.getProperty("db.url");
-                this.usuario = configuracion.getProperty("db.usuario");
-                this.password = configuracion.getProperty("db.password");
-                System.out.println("Configuración cargada exitosamente desde config.properties");
-                System.out.println("Usuario: " + this.usuario);
-                System.out.println("Password tiene longitud: " + (this.password != null ? this.password.length() : 0));
+                this.url = configuracion.getProperty("db.url", "jdbc:mysql://localhost:3306/desarrollo_web?useSSL=false&serverTimezone=UTC");
+                this.usuario = configuracion.getProperty("db.usuario", "root");
+                this.password = configuracion.getProperty("db.password", "");
+                System.out.println("Configuración de BD cargada desde config.properties");
+            } else {
+                usarValoresPorDefecto();
             }
         } catch (IOException ex) {
-            // Valores por defecto en caso de error
-            this.url = "jdbc:mysql://localhost:3306/desarrollo_web?useSSL=false&serverTimezone=UTC";
-            this.usuario = "root";
-            this.password = "[REDACTED_DB_PASSWORD]";
             System.out.println("ERROR al cargar config.properties: " + ex.getMessage());
+            usarValoresPorDefecto();
         }
+    }
+
+    private void usarValoresPorDefecto() {
+        this.url = "jdbc:mysql://localhost:3306/desarrollo_web?useSSL=false&serverTimezone=UTC";
+        this.usuario = "root";
+        this.password = "";
+        System.out.println("WARNING: Usando valores de BD por defecto para desarrollo local");
     }
 
     public String getUrl() {
