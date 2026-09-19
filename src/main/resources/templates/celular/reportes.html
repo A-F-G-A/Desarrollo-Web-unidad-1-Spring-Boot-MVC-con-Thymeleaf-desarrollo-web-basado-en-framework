@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reportes Parametrizados de Celulares</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f4f6f9; }
+        .main-card { max-width: 800px; margin: 40px auto; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="card main-card p-4 bg-white">
+        <h3 class="text-success fw-bold mb-4">Reportes Parametrizados de Celulares</h3>
+
+        <!-- Reporte 1: Buscar por Marca -->
+        <div class="card mb-4 border-success">
+            <div class="card-header bg-success text-white fw-bold">Reporte 1: Buscar por Marca</div>
+            <div class="card-body">
+                <form th:action="@{/celulares/reporte/marca}" method="get">
+                    <div class="mb-3">
+                        <label for="marca" class="form-label">Marca o Fragmento:</label>
+                        <input type="text" id="marca" name="marca" class="form-control" placeholder="Ej: Samsung, Apple, Xiaomi" required>
+                    </div>
+                    <button type="submit" class="btn btn-success">Generar Reporte por Marca</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reporte 2: Buscar por Sistema Operativo -->
+        <div class="card mb-4 border-primary">
+            <div class="card-header bg-primary text-white fw-bold">Reporte 2: Buscar por Sistema Operativo</div>
+            <div class="card-body">
+                <form th:action="@{/celulares/reporte/sistema}" method="get">
+                    <div class="mb-3">
+                        <label for="sistemaOperativo" class="form-label">Sistema Operativo:</label>
+                        <input type="text" id="sistemaOperativo" name="sistemaOperativo" class="form-control" placeholder="Ej: Android, iOS" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generar Reporte por Sistema Operativo</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Reporte 3: Buscar por Operador -->
+        <div class="card mb-4 border-info">
+            <div class="card-header bg-info text-white fw-bold">Reporte 3: Buscar por Operador</div>
+            <div class="card-body">
+                <form th:action="@{/celulares/reporte/operador}" method="get">
+                    <div class="mb-3">
+                        <label for="operador" class="form-label">Operador Red:</label>
+                        <input type="text" id="operador" name="operador" class="form-control" placeholder="Ej: Claro, Movistar, Tigo" required>
+                    </div>
+                    <button type="submit" class="btn btn-info text-white">Generar Reporte por Operador</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <a th:href="@{/}" class="btn btn-secondary">🏠 Volver al Inicio</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
