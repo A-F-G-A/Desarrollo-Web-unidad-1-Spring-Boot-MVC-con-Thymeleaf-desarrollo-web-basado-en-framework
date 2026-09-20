@@ -1,98 +1,194 @@
-# Desarrollo Web - Ejercicio 11 Celular (Spring Boot MVC + Thymeleaf)
+# Desarrollo Web - Unidad 1: Spring Boot MVC con Thymeleaf
 
-Aplicación web desarrollada con **Spring Boot MVC**, **Thymeleaf**, **Spring Data JPA** y **MySQL**.
+Aplicación web académica para gestión de **usuarios** y **celulares**, desarrollada con **Spring Boot MVC**, **Thymeleaf**, **Spring Data JPA** y **MySQL**.
 
-## Tecnologías Utilizadas
+Repositorio de entrega:
 
-- **Java 17**
-- **Spring Boot 3.2.5**
-- **Spring MVC (`@Controller`)**
-- **Thymeleaf (Vistas HTML)**
-- **Spring Data JPA / Hibernate**
-- **MySQL 8.x**
-- **Spring Boot Starter Mail (SMTP)**
-- **Bootstrap 5.3 (CDN UI)**
-- **Maven**
+`https://github.com/A-F-G-A/Desarrollo-Web-unidad-1-Spring-Boot-MVC-con-Thymeleaf-desarrollo-web-basado-en-framework`
 
 ---
 
-## Arquitectura del Proyecto
+## Objetivo
+
+Demostrar una aplicación web completa basada en framework con:
+
+- Autenticación por sesión
+- CRUD de usuarios y celulares
+- Reportes
+- Recuperación de contraseña por correo SMTP
+- Persistencia relacional con MySQL
+
+---
+
+## Tecnologías
+
+| Tecnología | Uso |
+|---|---|
+| Java 17 | Lenguaje |
+| Spring Boot 3.2.5 | Framework |
+| Spring MVC (`@Controller`) | Controladores web |
+| Thymeleaf | Vistas HTML |
+| Spring Data JPA / Hibernate | Persistencia |
+| MySQL 8.x | Base de datos |
+| Spring Boot Mail | SMTP / recuperación de clave |
+| Bootstrap 5.3 (CDN) | UI |
+| Maven | Build |
+
+---
+
+## Arquitectura
+
+```
+Controller → Service → Repository → Entity → MySQL
+                ↓
+            Thymeleaf (templates)
+```
 
 ```
 src/main/java/cel1/
-├── config/
-│   ├── SessionInterceptor.java    # Interceptor para proteger páginas privadas
-│   └── WebConfig.java             # Registro de interceptores Spring MVC
-├── controller/
-│   ├── AuthController.java        # Login, Logout y Recuperación de Contraseña
-│   ├── UsuarioController.java     # CRUD y Reportes de Usuarios
-│   └── CelularController.java     # CRUD y Reportes de Celulares
-├── entity/
-│   ├── Usuario.java               # Entidad JPA @Table("usuarios")
-│   └── Celular.java               # Entidad JPA @Table("celulares")
-├── repository/
-│   ├── UsuarioRepository.java     # Interface JpaRepository con consultas derivadas
-│   └── CelularRepository.java     # Interface JpaRepository con consultas derivadas
-├── service/
-│   ├── UsuarioService.java        # Capa de Negocio Usuario
-│   ├── CelularService.java        # Capa de Negocio Celular
-│   └── CorreoService.java         # Servicio de correo SMTP Spring Mail
-└── WebApplicationCelApplication.java # Main Application
+├── config/          # Interceptor de sesión y WebMvc
+├── controller/      # Auth, Usuario, Celular
+├── entity/          # Usuario, Celular (@Column snake_case)
+├── repository/      # Spring Data JPA
+├── service/         # Lógica de negocio + CorreoService
+└── WebApplicationCelApplication.java
 ```
+
+Mapeo de columnas en `Celular`:
+
+```text
+Java camelCase  →  @Column(name = "snake_case")  →  MySQL snake_case
+```
+
+Ejemplo: `almacenamientoPrincipal` → `almacenamiento_principal`
 
 ---
 
-## 🔧 Configuración de Base de Datos y SMTP
+## Requisitos
 
-Las credenciales y variables se configuran de forma desacoplada en `src/main/resources/application.properties` o mediante variables de entorno del sistema:
-
-### Variables de entorno (obligatorias en producción):
-- `DB_URL`: URL JDBC de MySQL
-- `DB_USER`: Usuario MySQL
-- `DB_PASSWORD`: Contraseña MySQL
-- `SMTP_HOST`: Host SMTP (por defecto `smtp.gmail.com`)
-- `SMTP_PORT`: Puerto SMTP (por defecto `587`)
-- `SMTP_USER`: Correo remitente
-- `SMTP_PASSWORD`: App Password / contraseña SMTP
-- `PORT`: Puerto HTTP (Railway lo define; local por defecto `8080`)
-
-> No almacene credenciales reales en el repositorio. Use variables de entorno o un archivo `.env` local (ignorado por Git).
+- JDK 17+
+- Maven 3.9+ (o usar `mvnw` / `mvnw.cmd` incluidos)
+- MySQL 8.x en ejecución
 
 ---
 
-## 🗄️ Creación e Inserción Inicial de Base de Datos
+## Base de datos (MySQL)
 
-Ejecute el script en MySQL Workbench o vía CLI:
+1. Crear el esquema e insertar datos de demostración:
 
 ```bash
-mysql -u root -p < database/schema.sql
+mysql -u TU_USUARIO -p < database/schema.sql
 ```
+
+2. Si su tabla `celulares` aún tiene columnas en camelCase (instalación antigua), ejecute **una sola vez**:
+
+```bash
+mysql -u TU_USUARIO -p < database/migrate_celulares_to_snake_case.sql
+```
+
+> El script de migración **no** hace `DROP TABLE` y conserva los datos existentes.
+
+Hibernate usa `spring.jpa.hibernate.ddl-auto=validate`: la aplicación fallará al arrancar si el esquema no coincide (comportamiento intencional).
 
 ---
 
-## 🚀 Cómo Ejecutar la Aplicación
+## Variables de entorno
 
-### Opción 1: Mediante Maven Spring Boot Plugin
+Copie `.env.example` como referencia. Spring Boot lee variables del **sistema operativo** / IDE / Railway (no carga `.env` automáticamente).
 
-```bash
-mvn spring-boot:run
+| Variable | Descripción | Ejemplo local |
+|---|---|---|
+| `DB_URL` | JDBC URL | `jdbc:mysql://localhost:3306/desarrollo_web?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true` |
+| `DB_USER` | Usuario MySQL | `TU_USUARIO` |
+| `DB_PASSWORD` | Contraseña MySQL | `TU_CONTRASEÑA` |
+| `SMTP_HOST` | Host SMTP | `smtp.gmail.com` |
+| `SMTP_PORT` | Puerto SMTP | `587` |
+| `SMTP_USER` | Correo remitente | `TU_CORREO` |
+| `SMTP_PASSWORD` | App Password SMTP | `TU_APP_PASSWORD` |
+| `PORT` | Puerto HTTP | `8080` (Railway lo inyecta) |
+
+En Windows (PowerShell, sesión actual):
+
+```powershell
+$env:DB_USER="root"
+$env:DB_PASSWORD="TU_CONTRASEÑA"
+$env:SMTP_USER="TU_CORREO"
+$env:SMTP_PASSWORD="TU_APP_PASSWORD"
 ```
 
-### Opción 2: Compilar JAR/WAR y ejecutar
+En NetBeans / IntelliJ: configure las mismas variables en la Run Configuration.
+
+**Nunca** suba credenciales reales al repositorio.
+
+---
+
+## Ejecución local
 
 ```bash
-mvn clean package
+# Compilar
+.\mvnw.cmd clean package
+
+# Ejecutar
+.\mvnw.cmd spring-boot:run
+```
+
+O:
+
+```bash
 java -jar target/desarrollo-web-celulares-1.0-SNAPSHOT.jar
 ```
 
-Acceda en el navegador a: `http://localhost:8080/`
+Abrir: [http://localhost:8080/](http://localhost:8080/)
 
 ---
 
-## 👥 Usuarios de Prueba
+## Usuarios de demostración
 
-| ID | Contraseña | Nombre | Rol | Email |
-|---|---|---|---|---|
-| `admin` | `admin123` | Administrador | admin | `admin@ejemplo.com` |
-| `usuario1` | `user123` | Juan Pérez | usuario | `juan@ejemplo.com` |
-| `usuario2` | `user456` | María García | usuario | `maria@ejemplo.com` |
+| ID | Contraseña | Rol |
+|---|---|---|
+| `admin` | `admin123` | admin |
+| `usuario1` | `user123` | usuario |
+| `usuario2` | `user456` | usuario |
+
+Estas credenciales son **solo de prueba académica**, no de producción.
+
+---
+
+## Funcionalidades
+
+- Login / logout con control de sesión
+- CRUD Usuario + reportes
+- CRUD Celular + reportes
+- Recuperación de contraseña (requiere SMTP configurado)
+
+---
+
+## Despliegue (GitHub → Railway)
+
+1. Conecte este repositorio a Railway.
+2. Añada un servicio **MySQL** en el mismo proyecto.
+3. Configure las variables de entorno del servicio Spring Boot:
+
+```text
+DB_URL
+DB_USER
+DB_PASSWORD
+SMTP_HOST
+SMTP_PORT
+SMTP_USER
+SMTP_PASSWORD
+```
+
+4. Railway define `PORT` automáticamente; la app usa `server.port=${PORT:8080}`.
+5. Ejecute `database/schema.sql` contra el MySQL de Railway (y la migración solo si aplica).
+6. Despliegue el servicio web.
+
+No coloque credenciales de Railway en GitHub.
+
+---
+
+## Seguridad
+
+- Las contraseñas de MySQL y SMTP **no** van en el código versionado.
+- Use variables de entorno en local y en producción.
+- Si alguna credencial real llegó a un commit antiguo, **revóquela y cámbiela**.
