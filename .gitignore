@@ -1,3 +1,8 @@
+# Environment
+.env
+.env.*
+!.env.example
+
 # Maven
 target/
 pom.xml.tag
@@ -41,19 +46,16 @@ Thumbs.db
 # Temporal files
 *.tmp
 *.bak
-*.swp
 *~.nib
 
 # Database
 *.db
 *.sqlite
-
-# Credentials (important!)
-**/credentials.properties
-**/config-local.properties
-.env
-.env.local
-
-# Backup files
 *_backup.sql
 *.backup
+
+# Credentials / local overrides
+**/credentials.properties
+**/config-local.properties
+**/application-local.properties
+**/application-secret.properties
