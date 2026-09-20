@@ -46,14 +46,17 @@ src/main/java/cel1/
 
 Las credenciales y variables se configuran de forma desacoplada en `src/main/resources/application.properties` o mediante variables de entorno del sistema:
 
-### Variables de Entorno opcionales:
-- `DB_URL`: URL de la base de datos (por defecto `jdbc:mysql://localhost:3306/desarrollo_web`)
-- `DB_USER`: Usuario MySQL (por defecto `root`)
-- `DB_PASSWORD`: Contraseña MySQL (por defecto `[REDACTED_DB_PASSWORD]`)
+### Variables de entorno (obligatorias en producción):
+- `DB_URL`: URL JDBC de MySQL
+- `DB_USER`: Usuario MySQL
+- `DB_PASSWORD`: Contraseña MySQL
 - `SMTP_HOST`: Host SMTP (por defecto `smtp.gmail.com`)
 - `SMTP_PORT`: Puerto SMTP (por defecto `587`)
 - `SMTP_USER`: Correo remitente
-- `SMTP_PASSWORD`: App Password de Google
+- `SMTP_PASSWORD`: App Password / contraseña SMTP
+- `PORT`: Puerto HTTP (Railway lo define; local por defecto `8080`)
+
+> No almacene credenciales reales en el repositorio. Use variables de entorno o un archivo `.env` local (ignorado por Git).
 
 ---
 
