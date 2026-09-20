@@ -163,29 +163,6 @@ Estas credenciales son **solo de prueba académica**, no de producción.
 
 ---
 
-## Despliegue (GitHub → Railway)
-
-1. Conecte este repositorio a Railway.
-2. Añada un servicio **MySQL** en el mismo proyecto.
-3. Configure las variables de entorno del servicio Spring Boot:
-
-```text
-DB_URL
-DB_USER
-DB_PASSWORD
-SMTP_HOST
-SMTP_PORT
-SMTP_USER
-SMTP_PASSWORD
-```
-
-4. Railway define `PORT` automáticamente; la app usa `server.port=${PORT:8080}`.
-5. Ejecute `database/schema.sql` contra el MySQL de Railway (y la migración solo si aplica).
-6. Despliegue el servicio web.
-
-No coloque credenciales de Railway en GitHub.
-
----
 
 ## Seguridad
 
