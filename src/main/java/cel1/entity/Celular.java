@@ -1,5 +1,6 @@
 package cel1.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -9,26 +10,67 @@ import jakarta.persistence.Table;
 public class Celular {
 
     @Id
+    @Column(name = "id")
     private String id;
+
+    @Column(name = "marca")
     private String marca;
+
+    @Column(name = "imei")
     private String imei;
+
+    @Column(name = "pulgadas")
     private String pulgadas;
+
+    @Column(name = "megapixeles")
     private String megapixeles;
+
+    @Column(name = "ram")
     private String ram;
+
+    @Column(name = "almacenamiento_principal")
     private String almacenamientoPrincipal;
+
+    @Column(name = "almacenamiento_secundario")
     private String almacenamientoSecundario;
+
+    @Column(name = "sistema_operativo")
     private String sistemaOperativo;
+
+    @Column(name = "operador")
     private String operador;
+
+    @Column(name = "tecnologia_banda")
     private String tecnologiaBanda;
+
+    @Column(name = "wifi")
     private String wifi;
+
+    @Column(name = "bluetooth")
     private String bluetooth;
+
+    @Column(name = "camaras")
     private String camaras;
+
+    @Column(name = "marca_cpu")
     private String marcaCpu;
+
+    @Column(name = "velocidad_cpu")
     private String velocidadCpu;
+
+    @Column(name = "nfc")
     private String nfc;
+
+    @Column(name = "huella")
     private String huella;
+
+    @Column(name = "ir")
     private String ir;
+
+    @Column(name = "resiste_agua")
     private String resisteAgua;
+
+    @Column(name = "cantidad_sim")
     private String cantidadSim;
 
     public Celular() {

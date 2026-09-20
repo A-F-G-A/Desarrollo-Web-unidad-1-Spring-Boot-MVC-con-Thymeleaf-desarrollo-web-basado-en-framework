@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     email VARCHAR(100)
 );
 
--- Tabla celulares
+-- Tabla celulares (columnas en snake_case; Java usa camelCase con @Column)
 CREATE TABLE IF NOT EXISTS celulares (
     id VARCHAR(50) PRIMARY KEY,
     marca VARCHAR(50) NOT NULL,
